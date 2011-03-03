@@ -1,0 +1,32 @@
+#include <allegro.h>
+
+int main() {
+    allegro_init();
+    install_keyboard();
+    set_color_depth(24);
+    set_gfx_mode(GFX_AUTODETECT_WINDOWED,640,480,0,0);
+    set_palette(default_palette);
+	//Kod powyżej będziemy używać zawsze do naszego projektu
+    clear_to_color(screen, makecol(0,255,0)); //ustawianie koloru tła
+
+	bufor = create_bitmap(640,480); // stosujemy podwójne buforowanie 
+	if (!bufor)
+	{
+		set_gfx_mode(GFX_TEXT,0,0,0,0);
+		allegro_message("Nie mogę utworzyć bufora !");
+		allegro_exit();
+		return 0;
+	}  
+	while( !key[KEY_ESC])
+{
+if( key[KEY_LEFT]) ludek_x--;
+if( key[KEY_RIGHT]) ludek_x++;
+if( key[KEY_UP]) ludek_y--;
+if( key[KEY_DOWN]) ludek_y++;
+}
+    readkey(); // Program oczekuje na dowolny klawisz
+ 
+    allegro_exit();
+    return 0;
+}
+END_OF_MAIN();
