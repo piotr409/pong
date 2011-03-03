@@ -1,32 +1,60 @@
 #include <allegro.h>
+//kompilacja gcc -o test main.c `allegro-config --cflags --libs`
+volatile long speed = 0;
+void increment_speed()
+{
+speed++;
+}
+END_OF_FUNCTION(increment_speed);
 
-int main() {
+LOCK_VARIABLE(speed);
+LOCK_FUNCTION(increment_speed);  
+
+
+int main()
+{
+	install_timer();
+	install_int_ex(increment_speed, BPS_TO_TIMER(100));  
     allegro_init();
     install_keyboard();
     set_color_depth(24);
-    set_gfx_mode(GFX_AUTODETECT_WINDOWED,640,480,0,0);
+    set_gfx_mode(GFX_AUTODETECT_WINDOWED, 640, 480, 0, 0);
     set_palette(default_palette);
-	//Kod powyżej będziemy używać zawsze do naszego projektu
-    clear_to_color(screen, makecol(0,255,0)); //ustawianie koloru tła
+    //Kod powyżej będziemy używać zawsze do naszego projektu
+    clear_to_color(screen, makecol(0, 255, 0));	//ustawianie koloru tła
+	BITMAP *bufor = NULL;
+    bufor = create_bitmap(640, 480);	// stosujemy podwójne buforowanie by nie migał ekran
+    if (!bufor) {
+	set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
+	allegro_message("Nie mogę utworzyć bufora !");
+	allegro_exit();
+	return 0;
+    }
+	int wynik1 = 0;
+	int wynik2 = 0;
+	int srodek1 = 240;
+	int srodek2 = 240;
 
-	bufor = create_bitmap(640,480); // stosujemy podwójne buforowanie 
-	if (!bufor)
-	{
-		set_gfx_mode(GFX_TEXT,0,0,0,0);
-		allegro_message("Nie mogę utworzyć bufora !");
-		allegro_exit();
-		return 0;
-	}  
-	while( !key[KEY_ESC])
+    while (!key[KEY_ESC]) {   //pętla dopóki nikt nie wciśnie ESC
+	clear_to_color(bufor, makecol(150,150,150));
+	rysuj_panele(bufor);
+	rysuj_wynik(bufor, wynik1, wynik2);
+	blit( bufor, screen, 0,0,0,0, 640,480); //kopiujemy bufor na ekran
+
+	while( speed > 0)
 {
+ 
 if( key[KEY_LEFT]) ludek_x--;
 if( key[KEY_RIGHT]) ludek_x++;
 if( key[KEY_UP]) ludek_y--;
 if( key[KEY_DOWN]) ludek_y++;
-}
-    readkey(); // Program oczekuje na dowolny klawisz
  
+speed--;
+}
+    }
+
     allegro_exit();
     return 0;
 }
+
 END_OF_MAIN();
